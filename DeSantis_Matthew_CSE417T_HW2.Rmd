@@ -1,0 +1,153 @@
+---
+title: "417T Homework 2"
+author: "Matthew DeSantis"
+date: "2023-10-06"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 1
+
+## (a)
+
+```{r echo=FALSE, results='asis'}
+library(knitr)
+
+a = data.frame(
+  iters = c("10^4", "10^5", "10^6"),
+  E_in = c(0.5448753241942732, 0.5146686367721147, 0.46543940954938184),
+  binary_error_train = c(0.26315789473684215, 0.256578947368421, 0.1842105263157895),
+  binary_error_test = c(0.2689655172413793, 0.19999999999999996, 0.1586206896551724),
+  time_to_finish = c(0.8, 6.6, 69.8)
+)
+
+kable(a)
+
+```
+
+As can be seen by the good test binary error, the model generalizes well. Increasing the max iterations made the model better and better.  
+
+## (b)
+
+```{r echo=FALSE, results='asis'}
+library(knitr)
+
+a = data.frame(
+  learning_rate = c(0.01,0.1,1,4,7,7.5,7.6,7.7),
+  E_in = c(0.4074311303484255,0.40738213811310936,0.4073814487199026,0.40738144168407703,0.4073814413634106,0.40738144134325566,0.40738144133968934,0.40738144133625925),
+  binary_error_train = c(0.17105263157894735,0.17105263157894735,0.17105263157894735,0.17105263157894735,0.17105263157894735,0.17105263157894735,0.17105263157894735,0.17105263157894735),
+  binary_error_test = c(0.11724137931034484,0.1103448275862069,0.1103448275862069,0.1103448275862069,0.1103448275862069,0.1103448275862069,0.1103448275862069,0.1103448275862069),
+  iterations_to_finish = c(1000000,1000000,1000000,1000000,1000000,1000000,1000000,1000000),
+  time_to_finish = c(67.3,63.9,64.7,66.0,66.7,66.5,63.4,62.7)
+)
+
+kable(a)
+
+```
+Note that there were small changes in E_in, just not significant enough to display on the graph. Values were normalized using the means and stds from X_test. It appears that normalizing helped our model slightly, although since we also changed the learning rate it's not certain. Increasing the learning rate very slightly helped improve the model. It's worth noting that at no point did the norm of the gradient go below $10^{-6}$, as all models took the same number of steps to finish, but it's likely that the models with the higher learning rate reached the point of diminishing returns more quickly. 
+
+\newpage
+
+# 2: LFD Problem 2.22 
+
+$\overline{g}(x)$ is the expected function, same as $E_D[(g^D(x)]$.
+  
+$E_D[E_{out}(g^D)] = E_D[E_{x,y}[(g^D(x)-y(x))^2]]$  
+$= E_D[E_{x,y}[(g^D(x)-(f(x)+\epsilon))^2]]$  
+$= E_{x,y}[E_D[(g^D(x)-(f(x)+\epsilon))^2]]$  
+$= E_{x,y}[E_D[g^D(x)^2-2(g^D(x)(f(x)+\epsilon)+(f(x)+\epsilon)^2]]$  
+$= E_{x,y}[E_D[g^D(x)^2]-2E_D[(g^D(x)](f(x)+\epsilon)+(f(x)+\epsilon)^2]]$  
+$= E_{x,y}[E_D[g^D(x)^2]-2\overline{g}(x)(f(x)+\epsilon)+(f(x)+\epsilon)^2]]$  
+$= E_{x,y}[E_D[g^D(x)^2]-2\overline{g}(x)f(x) - 2\overline{g}(x)\epsilon+(f(x)+\epsilon)^2]]$  
+$= E_{x,y}[E_D[g^D(x)^2]-2\overline{g}(x)f(x) - 2\overline{g}(x)\epsilon+f(x)^2+2f(x)\epsilon + \epsilon^2]]$  
+$= E_{x,y}[E_D[g^D(x)^2]-2\overline{g}(x)f(x) + \overline{g}(x)^2 -\overline{g}(x)^2 - 2\overline{g}(x)\epsilon+f(x)^2+2f(x)\epsilon + \epsilon^2]]$  
+$= E_{x,y}[E_D[g^D(x)^2] +(\overline{g}(x)-f(x))^2 -\overline{g}(x)^2 - 2\overline{g}(x)\epsilon+2f(x)\epsilon + \epsilon^2]]$  
+$= E_{x,y}[E_D[g^D(x)^2]-\overline{g}(x)^2 +(\overline{g}(x)-f(x))^2 - 2\overline{g}(x)\epsilon+2f(x)\epsilon + \epsilon^2]]$  
+$=variance+E_{x,y}[(\overline{g}(x)-f(x))^2 - 2\overline{g}(x)\epsilon+2f(x)\epsilon + \epsilon^2]]$  
+$=variance+bias +E_{x,y}[-2\overline{g}(x)\epsilon+2f(x)\epsilon + \epsilon^2]]$  
+$=variance+bias +E_{x,y}[\epsilon^2]]$  
+$=variance+bias +\sigma^2$  
+
+\newpage
+
+# 3: LFD Problem 2.24
+
+## (a)
+
+The algorithm will minimize $E_{in}$. Let's do this analytically.
+$E_{in} = \sum_{i=1}^2[f(x_i)-h(x_i)]^2$  
+$\sum_{i=1}^2[x_i^2-(ax_i+b)]^2$  
+Take partial derivatives with respect to both a and b and set to zero to get:
+$-2\sum_{i=1}^2x_i(x_i^2-ax_i-b) = 0$ and $-2\sum_{i=1}^2(x_i^2-ax_i-b) = 0$  
+We can multiply the second equation by $x_2$ to get the second item of the sum in the first Subtracting it from the first we get $x_1^2-ax_1-b=0$. Do the same with $x_1$ to get $x_2^2-ax_2-b=0$  
+Solving, we get $a=x_1+x_2$ and $b=-x_1x_2$, thus the final hypothesis is $(x_1+x_2)x-x_1x_2$. 
+Since each of $x_1$ and $x_2$ have an expected value of 0, the average function is also just 0.  
+
+## (b)
+
+First, fix an x. Then we sample two datapoints from [-1,1], compute the value of g(x) for this dataset. Repeat this a large number of times to find the value of the average function at this x. To compute $E_out$, we generate a large number of average function values for different x's. With this group of average function outputs, we can calculate variance, average squared distance from average function to f() (bias), and average squared distance from $g^D()$ to f() ($E_out$).
+
+## (c)
+![plot](plot.png)
+
+$E_{out} = 0.506116614706004$  
+$var = 0.321961885870224$  
+$bias = 0.18370167813452587$  
+
+## (d)
+Since x is uniform on [-1,1], the following is true:  
+$E[x]=0$  
+$E[x^2] = 1/3$  
+$E[x^3] = 0$  
+$E[x^4] = 1/5$  
+  
+We know $E_{out}$ is just variance + bias, so let's calculate those first.  
+$variance = E_{x}[E_D[(g^D(x)-\overline{g}(x))^2]]$  
+$variance = E_{x}[E_D[((x_1+x_2)x-x_1x_2 -0)^2]]$  
+$variance = E_{x}[E_D[((x_1+x_2)^2x^2 + x_1^2x_2^2 - 2x_1x_2(x_1+x_2)x]]$  
+$variance = E_{x}[x^2E_D(x_1^2+x_2^2+2x_1x_2)+E_D(x_1^2x_2^2)-2xE_D(x_1^2x_2+x_1x_2^2)]$  
+plug in the previously listed values to get  
+$variance = E_x[\frac{2}{3}x^2+\frac{1}{9}]$  
+$variance = \frac{2}{3}\frac{1}{3}+\frac{1}{9}$
+$variance = \frac{1}{3}$
+  
+$bias = E_x[(\overline{g}(x)-f(x))^2]$  
+$bias = E_x[(0-x^2)^2]$  
+$bias = E_x[x^4]$  
+$bias = \frac{1}{5}$  
+  
+Finally, we add the two to get $\frac{8}{15}$ for the out of sample error term. These values are pretty close to what we got in our experiment. Hooray!
+
+\newpage
+
+# 4: LFD Problem 3.4
+
+## (a)
+
+If $y_nw^Tx_n >1$, then $E_n(w)=0$, which is continuous and differentiable.  
+If $y_nw^Tx_n <1$, then $E_n(w)=1-y_nw^Tx_n$, which is a polynomial function which is continuous and differentiable.  
+If $y_nw^Tx_n =1$, then $E_n(w)=0$. $E_n(w)$ is therefore continuous.  
+  
+The gradient is the derivative of $(1-y_nw^Tx_n)^2$ w.r.t. w, which is $-2y_nx_n(1-y_nw^Tx_n)$. That is equal to 0 when $y_n=w^Tx_n$, which is when $y_nw^Tx_n =1$. Therefore it is differentiable everywhere.
+
+## (b)
+If $sign(w^Tx_n)\neq y_n$, then $y_nw^Tx_n$ is negative and thus $E_n(w)$ returns something greater than 1. If the signs are the same, then $E_n(w)$ returns at least 0, therefore it upper bounds it. Hence, $\frac{1}{N}\sum_{n=1}^NE_n(w)$ is an upper bound for $E_{in}(w)$.
+
+## (c)
+Adaline performs gradient descent because it updates the weight vector based on the gradient of its loss function, which is $E_n(w)$, as shown above. This is an improvement on PLA because it allows for degrees of wrongness and correctness in the weight vector. 
+
+\newpage
+
+# 5: LFD Problem 3.19
+
+## (a)
+If I'm understanding the notation correctly, this is binary encoding all variables. This would be an issue because it would balloon the number of variables, each binary entry essential becomes its own variable with its own entry in w. This makes the hypothesis set more complicated and thus the generalization worse. 
+
+## (b)
+This has the same issue as (a), where it expands the number of variables and thus hurts the generalization ability of the model.
+
+## (c)
+Once again, this massively increases the number of variables by turning every x into a 101x101 grid. This balloons the amount of data needed to achieve good generalization. 

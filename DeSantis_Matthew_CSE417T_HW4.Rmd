@@ -1,0 +1,42 @@
+---
+title: "417T Homework 4"
+author: "Matthew DeSantis"
+date: "2023-11-16"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 1
+
+## (a)
+![Plot](chart.png)
+
+## (b)
+For the 1v3 dataset, the OOB error with 200 bags was 0.002. The test error on a single tree was 0.016.  
+For the 3v5 dataset, the OOB error with 200 bags was 0.031. The test error on a single tree was 0.107.  
+  
+These results imply a few things. First, the 3v5 problem is more difficult overall than the 1v3 problem. Second, bagging with a large number of bags was much more effective on the 3v5 problem than it was for the 1v3 problem. Third, bagging always produced significantly better results than using a single tree did. This is very obvious when comparing the OOB error to the single tree test error, but the effect is still visible when comparing the bagged models' test errors to the single tree models' test errors as well, albeit it's less dramatic when doing that. 
+
+\newpage
+
+# 2 
+
+## (a)
+The ID3 algorithm chooses splitting criteria based on maximizing info gain. In this case, this is equivalent to picking the split at each stage that results in the proportions of poisonous labels in the two splits being as far from 0.5 as is possible. Therefore, the first split will be Stripes. Splitting at stripes results in 0 and 2/3 proportions for poisonous. This is better than 0.5 and 1 for Color and 1/3 and 1/2 for texture.
+
+## (b)
+![Tree](tree.png)
+
+\newpage
+
+# 3
+In Adaboost, we reweight the dataset in each iteration such that the previous model is as wrong as possible ($E_{in}^{D_{t+1}}(g_t) = 0.5$). Acting on that in this case would result in the weighted dataset in round 2 having 50% weight for positive and 50% weight for negative. With a perfect 50/50 split, there is no majority class, so depth 0 decision trees don't make sense in the context of Adaboost. 
+
+\newpage
+
+# 4
+
+We typically want to use bagging to aggregate weak learners with high variance/low bias, as bagging reduces the variance without affecting the low bias. Linear regression, however, features low variance and high bias, as it is a very simple model. Therefore, we should pick a different weak learner. 
